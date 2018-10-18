@@ -5,7 +5,18 @@ from player import *
 from items import *
 from gameparser import *
 
+def check_mass(item_mass):
+    a = 0
+    for i in inventory:
+        a += i["mass"]
+         
+    return a + item_mass < 3.0
+        
+        
 
+
+
+        
 
 def list_of_items(items):
     """This function takes a fucking dict of items (see items.py for the definition) and
@@ -255,29 +266,48 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    if item_id not in current_room["items"]:
-        print("you cant pick up what's not here")
-
+    
+    
+    a = {}
+    
     for i in current_room["items"]:
         if i["id"] == item_id:
-           
-           inventory.append(i)
-           current_room["items"].remove(i)
-           print("You've picked up %s" % (i["name"]))  
+            a = (i)
+            break
+        
+    if len(a) == 0 :
+      print("cant take whats not here")
+    
+    elif check_mass(a["mass"]) == True:
+      inventory.append(a)
+      current_room["items"].remove(a)
+      print("You've picked up %s" % (a["name"]))
+
+    else:
+      print("item is too heavy")
+       
+    
+        
+          
 
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
-    if item_id not in inventory:
-        print("you cant drop what you dont have!!!")
+    a = {}
     for i in inventory:
         if i["id"] == item_id:
-            inventory.remove(i)
-            current_room["items"].append(i)
+            a = i
+            break
 
-    
+    if len(a) > 0:
+      inventory.remove(i)
+      current_room["items"].append(i)
+        
+    else:
+      print("you cant drop what you dont have!!!")
+             
     
 
 def execute_command(command):
@@ -330,9 +360,9 @@ def menu(exits, room_items, inv_items):
 
     # Normalise the input
     normalised_user_input = normalise_input(user_input)
-
+    
     return normalised_user_input
-
+    
 
 def move(exits, direction):
     """This function returns the room into which the player will move if, from a
@@ -366,6 +396,11 @@ def main():
         # Execute the player's command
         execute_command(command)
 
+        if item_id in rooms["Admins"]["items"]:
+            print("Success you've got your New shiny id")
+            item_id["descrition"] = "Your new shiny student ID card. Expires 1 June 2018. You wonder why they have printed a suicide hotline number on it"
+            print(item_id["descrition"])
+            break
 
 
 # Are we being run as a script? If so, run main().
